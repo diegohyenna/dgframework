@@ -1,12 +1,13 @@
 # DG FRAMEWORK
 
-##### Um framewok feito com PHP para estudo das seguintes técnicas de desenvolvimento:
+##### Um framework feito com php para estudos em:
 - Design Patterns
 - SOLID
 - OO
 - MVC
+- PSR's
 
-##### Feito com as tecnologias:
+##### Tecnologias usadas:
 - PHP 7.2
-- Composer
-- Git
+- Composer 1.6.3
+- Git 2.14.3
