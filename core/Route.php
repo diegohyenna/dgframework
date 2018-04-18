@@ -36,36 +36,27 @@ class Route
         {
             $r = explode('@', $route[1]);
 
-            array_push($r,[$route[0], $r[0], $r[1]]);
+            $newRoute[] = [$route[0], $r[0], $r[1]];
         }
-
-        print_r($r);
-        $this->routes = $r;
+        
+        $this->routes = $newRoute;
     }
 
     private function run()
     {
-        $url = $this->getUrl();
-
-        $urlArray = explode('/', $url);
-
-        array_shift($urlArray);
-
-        var_dump($urlArray);
+        $url = $this->getUrl();        
 
         foreach ($this->routes as $route)
         {
+            $urlArray = explode('/', $url);
+
+            array_shift($urlArray);
 
             $routeArray = $route[0];
-
-            print_r($routeArray);
-            echo'<br>';
 
             $routeArray = explode('/', $routeArray);
 
             array_shift($routeArray);
-
-            var_dump($routeArray);
 
             if(count($urlArray) == count($routeArray))
             {
@@ -74,26 +65,47 @@ class Route
                     if(strpos($routeArray[$i], ':') !== false)
                     {
                         $routeArray[$i] = $urlArray[$i];
-                    }
+                        $params[] = $routeArray[$i];
+                    }                    
                 }
-
                 $routeArray = implode('/', $routeArray);
 
                 $urlArray = implode('/', $urlArray);
 
-                var_dump($routeArray);
-                var_dump($urlArray);
-
                 if($routeArray == $urlArray)
                 {
-                    echo 'igual';
-                }
-                else
-                {
-                    throw new \Exception("rota invalida!");
+                    $found = true;
+                    $controller = $route[1];
+                    $action = $route[2];
+                    break;
                 }
             }
         }
-
+        
+        if(isset($found) && $found)
+        {
+            $controller = Container::getController($controller);
+            $request = $_GET;           
+            
+            switch (isset($params) && count($params))
+            {
+                case 1:
+                    $controller->$action($params[0], $request);
+                    break;
+                case 2:
+                    $controller->$action($params[0], $params[1], $request);
+                    break;
+                case 3:
+                    $controller->$action($params[0], $params[1], $params[2], $request);
+                    break;
+                default:
+                    $controller->$action($request);
+                    break;
+            }            
+        }
+        else
+        {
+            echo 'rota invalida';
+        }
     }
 }
